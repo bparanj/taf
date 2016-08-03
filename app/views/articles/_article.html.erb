@@ -1,0 +1,12 @@
+<div id="article_<%= article.id %>">
+  <div class="large-12 columns border border-box glassy-bg mt pt">
+    <strong><%= h(article.author) %></strong><br />
+    <sup class="text-muted">From <%= time_ago_in_words(article.created_at)%></sup><br />
+    <div class="mb pb">
+      <%= h(article.content) %>
+    </div>
+    <div class="tags">
+      <%=raw tag_links(article.all_tags)%>
+    </div>
+  </div>
+</div>

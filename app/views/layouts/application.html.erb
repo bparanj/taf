@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link href='http://fonts.googleapis.com/css?family=PT+Sans' rel='stylesheet' type='text/css'>
+    <title>Tagging System</title>
+    <%= csrf_meta_tags %>
+	<%= stylesheet_link_tag    'application', media: 'all', 'data-turbolinks-track': 'reload' %>
+	<%= javascript_include_tag :modernizr %>
+  </head>
+
+  <body>
+    <nav class="top-bar" data-topbar role="navigation">
+      <h2>Tagging in Rails 5</h2>
+    </nav>
+    <nav class="menu">
+		<li class='menu-text'>A tutorial on tagging systems in Rails 5</li>
+    </nav>
+    <%= yield %>
+    <footer>
+      Copyright Notice
+    </footer>
+	<%= javascript_include_tag 'application' %>
+
+  </body>
+</html>

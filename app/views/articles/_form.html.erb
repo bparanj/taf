@@ -1,0 +1,23 @@
+<div class="row">
+  <div class="large-10 large-centered columns">
+
+     <%= form_for(@article, remote: true) do |f| %>
+      <div class="row column log-in-form">
+        <h4 class="text-center">Tag Me!</h4>
+        <label>Author
+          <%= f.text_field :author %>
+        </label>
+        <label>Body
+          <%= f.text_area :content, rows: 5 %>
+        </label>
+        <label>Tags
+          <%= f.text_field :all_tags, placeholder: "Tags separated with comma" %>
+        </label>
+
+	    <%= f.submit "Submit", class: "button"%>
+
+      </div>
+    <% end %>
+
+  </div>
+</div>
