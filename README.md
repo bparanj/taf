@@ -2,32 +2,56 @@ Tagging from Scratch in Rails 5 using Zurb Foundation
 
 Libraries Used
 
-Zurb Foundation Rails  6.2.3
-Modernizr 
+Zurb Foundation  6.2.3
+Modernizr        3.3.1
+
+Zurb Foundation is a CSS framework. Modernizr tells you what HTML, CSS and JavaScript features the user’s browser has to offer.
+
+Basic Setup
+
+Create a new Rails 5 project.
 
 ```
 rails new taf
 ```
 
-```
+Add:
+
+```ruby
 gem 'foundation-rails'
 ```
+
+to Gemfile and run:
 
 ```
 bundle
 ```
 
+Install Zurb Foundation by running the generator.
+
+```
+rails g foundation:install
+```
+
+Say, yes to override the application.html.erb. Create the tag model:
+
 ```
 rails g model tag name
 ```
+
+Create the article model:
 
 ```
 rails g model article author content:text
 ```
 
+Create the tagging model:
+
 ```
 rails g model tagging article:belongs_to tag:belongs_to
 ```
+
+Migrate the database:
 
 ```
 rails db:migrate
@@ -46,7 +70,7 @@ create_table "taggings", force: :cascade do |t|
 end
 ```
 
-Create assocations between articles and tags:
+Define the assocations between article and tag models:
 
 ```ruby
 class Tag < ApplicationRecord
@@ -55,25 +79,27 @@ class Tag < ApplicationRecord
 end
 ```
 
-```
+```ruby
 class Article < ApplicationRecord
   has_many :taggings
   has_many :tags, through: :taggings
 end
 ```
 
-Since we used the belongs_to in the rails generator for tagging model, we have:
+Since we used the `belongs_to` in the rails generator for tagging model, we have:
 
-```
+```ruby
 class Tagging < ApplicationRecord
   belongs_to :article
   belongs_to :tag
 end
 ```
 
+Tagging an Article
+
 Add tag related methods to article model.
 
-```
+```ruby
 def all_tags=(names)
   self.tags = names.split(',').map do |name|
     Tag.where(name: name.strip).first_or_create!
@@ -85,56 +111,47 @@ def all_tags
 end
 ```
 
-Install Zurb Foundation.
-
-```
-rails g foundation:install
-```
-
-Say, Yes to override the application.html.erb.
-
 Create the articles controller.
 
 ```
 rails g controller articles index create
 ```
 
-The user enters value for the virtual attribute in the view, so include it in the strong parameters.
+The user enters value for the `all_tags` virtual attribute in the view, so include it in the strong parameters.
 
+```ruby
 private
 
-```
 def article_params
   params.require(:article).permit(:author, :content, :all_tags)
 end
 ```
 
-Create the form with a text field for tags. We will use AJAX to create an article.
-
-app/views/articles/_form.html.erb:
+Create the form with a text field for tags. We will use AJAX to create an article. In `app/views/articles/_form.html.erb`:
 
 ```rhtml
-<div class="row text-center">
-  <%= form_for(@article, remote: true) do |f| %>
-    <div class="large-10 large-centered columns">
-      <%= f.text_field :author, placeholder: "Author name" %>
-    </div>
-    <div class="large-10 large-centered columns">
-      <%= f.text_area :content, placeholder: "Your post", rows: 5 %>
-    </div>
-    <div class="large-10 large-centered columns">
-      <%= f.text_field :all_tags, placeholder: "Tags separated with comma" %>
-    </div>
-    <div class="large-10 large-centered columns">
-      <%= f.submit "Post", class: "button"%>
-    </div>
-  <% end %>
+<div class="row">
+  <div class="large-10 large-centered columns">
+     <%= form_for(@article, remote: true) do |f| %>
+      <div class="row column log-in-form">
+        <h4 class="text-center">Tag Me!</h4>
+        <label>Author
+          <%= f.text_field :author %>
+        </label>
+        <label>Body
+          <%= f.text_area :content, rows: 5 %>
+        </label>
+        <label>Tags
+          <%= f.text_field :all_tags, placeholder: "Tags separated with comma" %>
+        </label>
+	    <%= f.submit "Submit", class: "button"%>
+      </div>
+    <% end %>
+  </div>
 </div>
 ```
 
-The remote: true attribute must be specified to make an AJAX call to the create action in articles controller.
-
-index.html.erb:
+The `remote: true` attribute must be specified to make an AJAX call to the create action in articles controller. Here is the app/views/articles/index.html.erb:
 
 ```rhtml
 <div class="row">
@@ -144,7 +161,7 @@ index.html.erb:
 </div>
 ```
 
-routes.rb:
+Define the resources in the routes.rb:
 
 ```ruby
 Rails.application.routes.draw do
@@ -153,15 +170,15 @@ Rails.application.routes.draw do
 end
 ```
 
-Add css to articles.scss:
+For the css in articles.scss, refer the source code repository for this article [taf]( 'tagging in rails 5')
+
+
 
 Run the rails server.
 
 ```
 ActionController::RoutingError (No route matches [GET] "/javascripts/vendor/modernizr.js"):
 ```
-
-Modernizr tells you what HTML, CSS and JavaScript features the user’s browser has to offer.
 
 
 ```ruby
@@ -196,8 +213,6 @@ $('#articles').prepend(new_post);
 $('#article_<%= @article.id %>').fadeIn('slow');
 $('#new_article')[0].reset();
 ```
-
-
 
 Search by Tag
 
@@ -288,8 +303,7 @@ Change index to display the articles:
 </div>
 ```
 
-https://www.sitepoint.com/tagging-scratch-rails/
-
 Resources
 
-https://modernizr.com
+[Modernizr](https://modernizr.com 'Modernizr')
+[Tagging from Scratch in Rails 4](https://www.sitepoint.com/tagging-scratch-rails/ 'Tagging from Scratch in Rails 4')
