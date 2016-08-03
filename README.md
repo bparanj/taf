@@ -1,13 +1,13 @@
 Tagging from Scratch in Rails 5 using Zurb Foundation
 
-Libraries Used
+## Libraries Used
 
-Zurb Foundation  6.2.3
-Modernizr        3.3.1
+- Zurb Foundation  6.2.3
+- Modernizr        3.3.1
 
 Zurb Foundation is a CSS framework. Modernizr tells you what HTML, CSS and JavaScript features the user’s browser has to offer.
 
-Basic Setup
+## Basic Setup
 
 Create a new Rails 5 project.
 
@@ -95,7 +95,7 @@ class Tagging < ApplicationRecord
 end
 ```
 
-Tagging an Article
+## Tagging an Article
 
 Add tag related methods to article model.
 
@@ -111,7 +111,7 @@ def all_tags
 end
 ```
 
-Create the articles controller.
+Create the articles controller with index and create actions.
 
 ```
 rails g controller articles index create
@@ -170,31 +170,25 @@ Rails.application.routes.draw do
 end
 ```
 
-For the css in articles.scss, refer the source code repository for this article [taf]( 'tagging in rails 5')
-
-
-
-Run the rails server.
+For the css in articles.scss, refer the source code repository for this article [taf](https://github.com/bparanj/taf 'tagging in rails 5'). Run the rails server. When we create a new article, we get the error:
 
 ```
 ActionController::RoutingError (No route matches [GET] "/javascripts/vendor/modernizr.js"):
 ```
 
+Add:
 
 ```ruby
 gem 'modernizr-rails'
 ```
 
-bundle
-
-
-In layout:
+to Gemfile and run bundle. In layout, add:
 
 ```rhtml
 <%= javascript_include_tag :modernizr %>
 ```
 
-in the head section. Otherwise, you will have problems loading modernizr.js. Restart the server.
+in the head section. Otherwise, you will have problems loading modernizr.js. Restart the server. You will now get the error:
 
 ```
 Sprockets::Rails::Helper::AssetNotPrecompiled in Articles#index
@@ -202,10 +196,7 @@ Asset was not declared to be precompiled in production.
 Add `Rails.application.config.assets.precompile += %w( modernizr.js )` to `config/initializers/assets.rb` and restart your server
 ```
 
-Add the above declaration and restart the server.
-
-
-create.js.erb:
+Add the above declaration and restart the server. Create the file app/views/articles/create.js.erb:
 
 ```rhtml
 var new_post = $("<%= escape_javascript(render(partial: @article))%>").hide();
@@ -214,7 +205,39 @@ $('#article_<%= @article.id %>').fadeIn('slow');
 $('#new_article')[0].reset();
 ```
 
-Search by Tag
+Implement the create action:
+
+```ruby
+def create
+  @article = Article.new(article_params)
+  respond_to do |format|
+    if @article.save
+      format.js
+    else
+      format.html { render root_path }
+    end
+  end
+end
+```
+
+Create _article.html.erb to render the article:
+
+```
+<div id="article_<%= article.id %>">
+  <div class="large-12 columns border border-box glassy-bg mt pt">
+    <strong><%= h(article.author) %></strong><br />
+    <sup class="text-muted">From <%= time_ago_in_words(article.created_at)%></sup><br />
+    <div class="mb pb">
+      <%= h(article.content) %>
+    </div>
+    <div class="tags">
+      <%=raw tag_links(article.all_tags)%>
+    </div>
+  </div>
+</div>
+```
+
+## Search by Tag
 
 Implement the method to find all articles that is tagged with a certain tag in article.rb:
 
@@ -224,7 +247,7 @@ def self.tagged_with(name)
 end
 ```
 
-Change the index to :
+Change the articles index action to handle the search:
 
 ```ruby
 @articles = if params[:tag]
@@ -234,11 +257,15 @@ else
 end
 ```
 
+Declare the route for searching.
+
 ```ruby
 get 'tags/:tag', to: 'articles#index', as: 'tag'
 ```
 
-Tag Cloud
+Now you can see all the articles that has been tagged by a specific tag by clicking on any tag.
+
+## Tag Cloud
 
 Implement the number method in Tag.
 
@@ -253,7 +280,7 @@ class Tag < ApplicationRecord
 end
 ```
 
-tag_cloud helper.
+Implement the `tag_cloud` method in articles helper.
 
 ```ruby
 module ArticlesHelper
@@ -271,7 +298,7 @@ module ArticlesHelper
 end
 ```
 
-tags.scss
+Add the css to tags.scss:
 
 ```css
 .css1 { font-size: 1.0em;}
@@ -280,9 +307,7 @@ tags.scss
 .css4 { font-size: 1.6em;}
 ```
 
-Create an article with some tags.
-
-Change index to display the articles:
+Create an article with some tags. Change index to display the articles:
 
 ```rhtml
 <div class="row mt pt">
@@ -303,7 +328,13 @@ Change index to display the articles:
 </div>
 ```
 
-Resources
+You can download the source code for this article from [Tagging in Rails 5](https://github.com/bparanj/taf 'Tagging in Rails 5').
+
+## Summary
+
+In this article, you learned how to develop tagging a single model from scratch in Rails 5 using Zurb Foundation and Modernizr.
+
+## Resources
 
 [Modernizr](https://modernizr.com 'Modernizr')
 [Tagging from Scratch in Rails 4](https://www.sitepoint.com/tagging-scratch-rails/ 'Tagging from Scratch in Rails 4')
