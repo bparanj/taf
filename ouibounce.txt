@@ -1,5 +1,7 @@
 How to use Ouibounce in Rails 5
 
+Ouibounce is a small library enabling you to display a modal before a user leaves your website.
+
 1. Download the [ouibounce.js](https://raw.githubusercontent.com/carlsednaoui/ouibounce/master/build/ouibounce.js 'ouibounce js') and save it in vendor/assets/javascripts folder.
 
 2. In app/views/layouts/application.html.erb, add:
@@ -284,3 +286,7 @@ Rails.application.config.assets.precompile += %w( modernizr.js ouibounce.js )
 ```
 
 You will now see the sample modal when you are about to close the tab.
+
+## Summary
+
+In this article, you learned how to hook up the ouibounce library with Rails 5 asset pipeline.
